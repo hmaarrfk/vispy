@@ -5,33 +5,8 @@
 # Force the selection of an application backend. If the user has already
 # imported PyQt or PySide, this should result in selection of the corresponding
 # backend.
-from .backends import qt_lib
-
-from . import use_app
-app = use_app()
-try:
-    QtGui = app.backend_module.QtGui
-except AttributeError:
-    raise RuntimeError("Cannot import Qt library; non-Qt backend is already "
-                       "in use.")
-
-
-if qt_lib in 'pyqt4':
-    from PyQt4 import QtGui
-    QWidget, QGridLayout = QtGui.QWidget, QtGui.QGridLayout  # Compat
-elif qt_lib == 'pyside':
-    from PySide import QtGui
-    QWidget, QGridLayout = QtGui.QWidget, QtGui.QGridLayout  # Compat
-elif qt_lib == 'pyqt5':
-    from PyQt5 import QtWidgets
-    QWidget, QGridLayout = QtWidgets.QWidget, QtWidgets.QGridLayout  # Compat
-elif qt_lib == 'pyside2':
-    from PySide2 import QtWidgets
-    QWidget, QGridLayout = QtWidgets.QWidget, QtWidgets.QGridLayout  # Compat
-elif qt_lib:
-    raise RuntimeError("Invalid value for qt_lib %r." % qt_lib)
-else:
-    raise RuntimeError("Module backends._qt should not be imported directly.")
+from qtpy import QtWidgets
+QWidget, QGridLayout = QtWidgets.QWidget, QtWidgets.QGridLayout  # Compat
 
 
 class QtCanvas(QWidget):

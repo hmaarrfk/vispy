@@ -34,7 +34,6 @@ from ...util import keys
 from ...ext.six import text_type
 from ...ext.six import string_types
 from ... import config
-from . import qt_lib
 
 USE_EGL = config['gl_backend'].lower().startswith('es')
 
@@ -50,50 +49,17 @@ elif sys.platform.startswith('darwin'):
 elif sys.platform.startswith('win'):
     IS_WIN = True
 
-# -------------------------------------------------------------------- init ---
-
-
-def _check_imports(lib):
-    # Make sure no conflicting libraries have been imported.
-    libs = ['PyQt4', 'PyQt5', 'PySide', 'PySide2']
-    libs.remove(lib)
-    for lib2 in libs:
-        lib2 += '.QtCore'
-        if lib2 in sys.modules:
-            raise RuntimeError("Refusing to import %s because %s is already "
-                               "imported." % (lib, lib2))
-
-# Get what qt lib to try. This tells us wheter this module is imported
-# via _pyside or _pyqt4 or _pyqt5
 QGLWidget = object
-if qt_lib == 'pyqt4':
-    _check_imports('PyQt4')
-    if not USE_EGL:
-        from PyQt4.QtOpenGL import QGLWidget, QGLFormat
-    from PyQt4 import QtGui, QtCore, QtTest
-    QWidget, QApplication = QtGui.QWidget, QtGui.QApplication  # Compat
-elif qt_lib == 'pyqt5':
-    _check_imports('PyQt5')
-    if not USE_EGL:
-        from PyQt5.QtOpenGL import QGLWidget, QGLFormat
-    from PyQt5 import QtGui, QtCore, QtWidgets, QtTest
-    QWidget, QApplication = QtWidgets.QWidget, QtWidgets.QApplication  # Compat
-elif qt_lib == 'pyside2':
-    _check_imports('PySide2')
-    if not USE_EGL:
-        from PySide2.QtOpenGL import QGLWidget, QGLFormat
-    from PySide2 import QtGui, QtCore, QtWidgets, QtTest
-    QWidget, QApplication = QtWidgets.QWidget, QtWidgets.QApplication  # Compat
-elif qt_lib == 'pyside':
-    _check_imports('PySide')
-    if not USE_EGL:
-        from PySide.QtOpenGL import QGLWidget, QGLFormat
-    from PySide import QtGui, QtCore, QtTest
-    QWidget, QApplication = QtGui.QWidget, QtGui.QApplication  # Compat
-elif qt_lib:
-    raise RuntimeError("Invalid value for qt_lib %r." % qt_lib)
-else:
-    raise RuntimeError("Module backends._qt should not be imported directly.")
+if not USE_EGL:
+    from qtpy.QtOpenGL import QGLWidget, QGLFormat
+from qtpy import QtGui, QtCore, QtWidgets, QtTest
+QWidget, QApplication = QtWidgets.QWidget, QtWidgets.QApplication  # Compat
+
+import qtpy
+available, testable, why_not = True, True, None
+has_uic = 'uic' in dir(qtpy)
+
+which = (qtpy.API, QtCore.__version__, QtCore.__version__)
 
 # todo: add support for distinguishing left and right shift/ctrl/alt keys.
 # Linux scan codes:  (left, right)
