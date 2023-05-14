@@ -283,8 +283,8 @@ def _set_config(c):
         glformat.setSwapBehavior(glformat.DoubleBuffer if c['double_buffer']
                                  else glformat.SingleBuffer)
     elif PYQT6_API:
-        glformat.setSwapBehavior(glformat.SwapBehavior.DoubleBuffer if c['double_buffer']
-                                 else glformat.SwapBehavior.SingleBuffer)
+        glformat.setSwapBehavior(QGLFormat.SwapBehavior.DoubleBuffer if c['double_buffer']
+                                 else QGLFormat.SwapBehavior.SingleBuffer)
     else:
         # Qt4 and Qt5 < 5.4.0 - buffers must be explicitly requested.
         glformat.setAccum(False)
